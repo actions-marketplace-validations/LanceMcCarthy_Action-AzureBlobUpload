@@ -1,7 +1,6 @@
-import jest from "eslint-plugin-jest";
 import i18nText from "eslint-plugin-i18n-text";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
-import stylisticTs from "@stylistic/eslint-plugin-ts";
+import stylistic from "@stylistic/eslint-plugin";
 import globals from "globals";
 import tsParser from "@typescript-eslint/parser";
 import path from "node:path";
@@ -20,25 +19,22 @@ const compat = new FlatCompat({
 
 export default [
     // i18nText.configs.recommended,
-    // stylisticTs.configs.recommended,
+    // stylistic.configs.recommended,
     // typescriptEslint.configs.recommended,
     github.getFlatConfigs().recommended,
     ...github.getFlatConfigs().typescript,
     {
     ignores: ["**/dist/", "**/lib/", "**/node_modules/", "eslint.config.mjs"],
     }, 
-    ...compat.extends("plugin:jest/recommended").map(config => ({files: ["**/*.ts"], ...config})), 
     {
     plugins: {
-        jest,
         // "i18n-text": i18nText,
         // "@typescript-eslint": typescriptEslint,
-        "@stylistic/ts": stylisticTs,
+        stylistic,
     },
     languageOptions: {
         globals: {
             ...globals.node,
-            ...jest.environments.globals.globals,
         },
         parser: tsParser,
         ecmaVersion: 9,
@@ -91,7 +87,7 @@ export default [
         "@typescript-eslint/restrict-plus-operands": "error",
         "@typescript-eslint/semi": "off",
         "@typescript-eslint/unbound-method": "error",
-        "@stylistic/ts/func-call-spacing": ["error", "never"],
-        "@stylistic/ts/type-annotation-spacing": "error",
+        "stylistic/function-call-spacing": ["error", "never"],
+        "stylistic/type-annotation-spacing": "error",
     }
 }];

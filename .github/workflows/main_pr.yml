@@ -1,8 +1,16 @@
 name: 'Pull Request Validation'
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - main
+    paths:
+      - 'src/**/*'
+      - 'package.json'
+      - 'package-lock.json'
+
+env:
+  ALLOWED_ENDPOINTS: "github.com:443 registry.npmjs.org:443 api.akeyless.io:443"
 
 jobs:
 #--------------------------------------------------------------------------------------#
@@ -10,34 +18,100 @@ jobs:
 #--------------------------------------------------------------------------------------#
   Package_RunTests:
     name: 'Build Package and Run Tests'
+    if: github.event_name == 'workflow_dispatch' || contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association) || github.actor == 'dependabot[bot]'
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v5
-
-      - uses: actions/setup-node@v5
+      - name: Harden Runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
         with:
-          node-version: '22'
+          egress-policy: audit
+
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
           
       - name: "Run scripts"
         run: npm run all
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
 
+      - name: Upload built action artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: built-action-artifacts
+          path: |
+            dist/**
+            lib/**
+
+
 #--------------------------------------------------------------------------------------#
-# Single test for uploading a large number of files to test performance or problems.
+# Temp directory Tests
 #--------------------------------------------------------------------------------------#
-  LargeFileCount_Test:
-    name: 'Publish wwwroot using Windows'
-    runs-on: windows-latest
+  Linux_TempDir_Test:
+    name: 'Test Linux Temp Directory'
+    runs-on: ubuntu-latest
     needs: Package_RunTests
     steps:
-      - uses: actions/checkout@v5
+      - name: Harden Runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@v7
+
+      - name: Download built action artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: built-action-artifacts
+          path: .
+
+      - name: Generate temp files for upload test
+        run: |
+          mkdir -p ${{runner.temp}}/my-data
+          for i in {1..10}; 
+            do echo "Test file $i" > ${{runner.temp}}/my-data/file_$i.txt;
+          done
 
       - uses: ./
-        name: Upload wwwroot to /LargeFileCountTest/Windows
+        name: Upload Temp Directory Files
         with:
           connection_string: ${{secrets.AzureBlobConnectionString}}
           container_name: ci-cd
-          destination_folder: LargeFileCountTest/Windows
-          source_folder: TestFiles\wwwroot\
+          destination_folder: TempDirTest/Linux
+          source_folder: ${{runner.temp}}/my-data
+          clean_destination_folder: true
+
+  Windows_TempDir_Test:
+    name: 'Test Windows Temp Directory'
+    runs-on: windows-latest
+    needs: Package_RunTests
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@v7
+
+      - name: Download built action artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: built-action-artifacts
+          path: .
+
+      - name: Generate temp files for upload test
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "${{runner.temp}}/my-data"
+          1..10 | ForEach-Object { "Test file $_" | Out-File "${{runner.temp}}/my-data/file_$_.txt" }
+
+      - uses: ./
+        name: Upload Temp Directory Files
+        with:
+          connection_string: ${{secrets.AzureBlobConnectionString}}
+          container_name: ci-cd
+          destination_folder: TempDirTest/Windows
+          source_folder: ${{runner.temp}}/my-data
           clean_destination_folder: true

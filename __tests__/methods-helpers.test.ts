@@ -1,5 +1,5 @@
 import * as helpers from '../src/methods-helpers';
-import {expect, describe, it} from '@jest/globals';
+import {expect, describe, it} from 'vitest';
 
 describe('getFinalPathForFileName', () => {
   it('Should return just the filename if no destination is given', () => {
@@ -59,5 +59,13 @@ describe('normalizePath', () => {
 describe('CleanPath', () => {
   it('should remove dot prefixes, duplicate separators and trailing slashes', () => {
     expect(helpers.CleanPath('.\\folder\\subfolder/')).toEqual('folder/subfolder');
+  });
+
+  it('should preserve absolute paths with a leading slash', () => {
+    expect(helpers.CleanPath('/home/runner/work/_temp/janitor-data')).toEqual('/home/runner/work/_temp/janitor-data');
+  });
+
+  it('should remove trailing slash from absolute paths', () => {
+    expect(helpers.CleanPath('/home/runner/work/_temp/janitor-data/')).toEqual('/home/runner/work/_temp/janitor-data');
   });
 });
