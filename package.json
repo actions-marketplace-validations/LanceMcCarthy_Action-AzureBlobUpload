@@ -1,6 +1,6 @@
 {
   "name": "action-azure-upload-blob",
-  "version": "3.16.0",
+  "version": "3.17.0",
   "private": false,
   "description": "GitHub Action that uploads files to an Azure Storage blob container.",
   "main": "lib/main.js",
@@ -40,33 +40,11 @@
     "url": "https://github.com/LanceMcCarthy/Action-AzureBlobUpload/issues"
   },
   "homepage": "https://github.com/LanceMcCarthy/Action-AzureBlobUpload#readme",
-  "overrides": {
-    "typescript-eslint": "8.60.0",
-    "@typescript-eslint/eslint-plugin": "8.60.0",
-    "@typescript-eslint/parser": "8.60.0",
-    "@typescript-eslint/project-service": "8.60.0",
-    "@typescript-eslint/scope-manager": "8.60.0",
-    "@typescript-eslint/tsconfig-utils": "8.60.0",
-    "@typescript-eslint/type-utils": "8.60.0",
-    "@typescript-eslint/types": "8.60.0",
-    "@typescript-eslint/typescript-estree": "8.60.0",
-    "@typescript-eslint/utils": "8.60.0",
-    "@typescript-eslint/visitor-keys": "8.60.0",
-    "strnum": "2.3.0",
-    "glob": "13.0.6",
-    "js-yaml": "4.2.0",
-    "react-is": "19.2.6",
-    "react-is-19": "npm:react-is@19.2.6",
-    "pretty-format": {
-      "react-is-19": "npm:react-is@19.2.6"
-    }
-  },
   "devDependencies": {
     "@actions/core": "3.0.1",
     "@azure/identity": "4.13.1",
     "@azure/storage-blob": "12.33.0",
-    "@eslint/eslintrc": "3.3.5",
-    "@eslint/js": "9.39.4",
+    "@eslint/js": "10.0.1",
     "@stylistic/eslint-plugin": "5.10.0",
     "@types/mime-types": "3.0.1",
     "@types/node": "26.1.0",
@@ -74,9 +52,7 @@
     "@typescript-eslint/parser": "8.60.0",
     "@vitest/coverage-v8": "4.1.9",
     "esbuild": "0.28.1",
-    "eslint": "9.39.4",
-    "eslint-plugin-github": "6.0.0",
-    "eslint-plugin-i18n-text": "1.0.1",
+    "eslint": "10.7.0",
     "globals": "17.7.0",
     "mime-types": "3.0.2",
     "prettier": "3.9.4",
